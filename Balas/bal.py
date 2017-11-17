@@ -7,7 +7,7 @@ import numpy as np
 solutions = []
 
 a = np.matrix('1 0 1 0 0;1 0 0 1 1;1 1 0 0 1;0 0 0 1 1;0 1 1 0 0;0 0 1 1 0')
-a = np.matrix('1 1 0 0 0;0 1 1 0 0;0 0 1 1 0;0 0 0 1 1;1 0 0 0 1')
+# a = np.matrix('1 1 0 0 0;0 1 1 0 0;0 0 1 1 0;0 0 0 1 1;1 0 0 0 1')
 # print(a)
 # print(dir(a))
 np.save('F.npy', a)
@@ -53,12 +53,22 @@ def main_checker(x):
     return feasible(future_sol) and not feasible(x)
 
 
+def isMin(x):
+    if minimum_value == -1:
+        return z(x)
+    if z(x) <= minimum_value:
+        return z(x)
+    return minimum_value
+
+
 stack = [[[0] * p, -1]]
 
 parent = []
 wasInStack = [[0] * p]
 iterations = 0
 depth = -1
+minimum_value = -1
+
 while stack:
 
     # break
@@ -68,13 +78,14 @@ while stack:
     depth += 1
     left_sol = parent[:]
     left_sol[depth] = 0
-    print("depth = ", depth)
+    # print("depth = ", depth)
     try:
         left_sol[depth + 1] = 1
-        print("l : ", left_sol)
+        # print("l : ", left_sol)
         if main_checker(left_sol):
             stack.append([left_sol, depth])
         elif feasible(left_sol):
+            minimum_value = isMin(left_sol)
             solutions.append(left_sol)
 
             # depth -= 1
@@ -84,22 +95,31 @@ while stack:
     right_sol = parent[:]
     right_sol[depth] = 1
 
-    print("r : ", right_sol)
+    # print("r : ", right_sol)
     if main_checker(right_sol):
         stack.append([right_sol, depth])
     elif feasible(right_sol):
+        minimum_value = isMin(right_sol)
         solutions.append(right_sol)
         # depth -= 1
-    print("stack : ", stack)
+    # print("stack : ", stack)
 
     # if stack_size == len(stack):
     #     depth -= 1
 
-    print("sol : ", solutions)
+    # print("sol : ", solutions)
     iterations += 1
-    print("\ni :", iterations)
-    if iterations > 32:
-        break
+    # print("\ni :", iterations)
+    # if iterations > 32:
+    #     break
+
+print("Minimum Value : ", minimum_value)
+
+print("Solutions : ")
+unique_solutions = [list(x) for x in set(tuple(x) for x in solutions)]
+for i in solutions:
+    if z(i) == minimum_value:
+        print(i)
 # print(x.dtype)
 # print(x.astype(int))
 # print(C)
