@@ -1,0 +1,15 @@
+
+I am trying to implement Basal Additive Algorithm in C++. On smaller problem size it seems to be working fine (I've even checked intermediate steps), but I get Segmentation Fault on bigger datasets. For days I have tried to debug, but without success. I will post program code, valgrind output as well my rationel behind code. I was testing on this dataset. Explanation of algorithm can be found here and you can see example as well.
+
+Idea is to set vector of zeros, x and:
+
+    if x is feasable and better than previous best; update best
+    if x is not feasable and not impossible and it's value is better than best known solution found so far (BKS) add two new possible solutions
+
+After those are checked, check if work_que has tasks, and if so, execute first one available in recursive fashion. (I think this is doing BFS, and not DFS originally described, but I don't see how this affects correctness of algorithm).
+
+I've seen that execution crashes with approx. 41k elements in que, but I don't know if this is relevant information. Also, as algorithm is basically exponentiall, could it be too much recursion ?
+
+Any help would be appriciated, even with tips how to debug it rigorously. If you are going to compile the code, make sure to add -std=c++11 -O3. Also, I haven't managed to find relevant dataset that is smaller and would allow me to manually check interations. If you have any suggestions, I'd be thankful.Please ask for more information if you need them.
+
+Thanks!
