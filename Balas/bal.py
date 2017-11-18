@@ -3,37 +3,50 @@
 from builtins import print
 
 import numpy as np
+import time
+import generate_test
 
 solutions = []
+a = input("Enter n, p, k : ").split()
+a = map(int, a)
+n, p, k = a
 
-a = np.matrix('1 0 1 0 0;1 0 0 1 1;1 1 0 0 1;0 0 0 1 1;0 1 1 0 0;0 0 1 1 0')
+# a = np.matrix('1 0 1 0 0;1 0 0 1 1;1 1 0 0 1;0 0 0 1 1;0 1 1 0 0;0 0 1 1 0')
+# a = generate_test.generate(10, 10, 4)
 # a = np.matrix('1 1 0 0 0;0 1 1 0 0;0 0 1 1 0;0 0 0 1 1;1 0 0 0 1')
 # print(a)
 # print(dir(a))
-np.save('F.npy', a)
+# np.save('F.npy', a)
 
-F = np.load('F.npy')
+# F = np.load('F.npy')
+tme = time.time()
+F = generate_test.generate(n, p, k)
+tme = time.time() - tme
 print(F)
+print("Time taken to generate matrix : ", tme)
 C = F.sum(1)
 p = C.size
 # print(F.dtype)
 n = F.size // p
 
-k = [2] * n
-k = np.array(k)
+print("n=%d, p=%d, k=%d" % (n, p, k))
 
-print("n=%d, p=%d" % (n, p))
+k = [k] * n
+k = np.array(k)
 
 
 def z(x):
     if type(x) == type(list):
-        return C.T.dot(np.array(x))
+        return (C.T.dot(np.array(x))).item(0)
     else:
-        return C.T.dot(x)
+        return (C.T.dot(x)).item(0)
 
 
 def feasible(x):
-    tru = F.T.dot(x) >= k
+    mysol = np.array(x)
+    tru = (F.T.dot(mysol))
+    tru = np.array(tru.tolist()[0])
+    tru = tru >= k
     tru = tru.tolist()
     satisfied = True
     for v in tru:
@@ -41,7 +54,9 @@ def feasible(x):
     return satisfied
 
 
-# print(feasible([1, 1, 1, 1, 1, 0]))
+# print(feasible([0]))
+
+# print(feasible([0, 1, 0, 0, 0, 0, 0, 1, 0, 0]))
 
 
 def main_checker(x):
@@ -69,10 +84,8 @@ iterations = 0
 depth = -1
 minimum_value = -1
 
+tme = time.time()
 while stack:
-
-    # break
-
     parent, depth = stack.pop()
     stack_size = len(stack)
     depth += 1
@@ -85,6 +98,7 @@ while stack:
         if main_checker(left_sol):
             stack.append([left_sol, depth])
         elif feasible(left_sol):
+            # print(left_sol)
             minimum_value = isMin(left_sol)
             solutions.append(left_sol)
 
@@ -99,6 +113,7 @@ while stack:
     if main_checker(right_sol):
         stack.append([right_sol, depth])
     elif feasible(right_sol):
+        # print(right_sol)
         minimum_value = isMin(right_sol)
         solutions.append(right_sol)
         # depth -= 1
@@ -112,14 +127,16 @@ while stack:
     # print("\ni :", iterations)
     # if iterations > 32:
     #     break
+tme = time.time() - tme
+print("\nMinimum Value : ", minimum_value)
 
-print("Minimum Value : ", minimum_value)
-
-print("Solutions : ")
+print("\nSolutions : ")
 unique_solutions = [list(x) for x in set(tuple(x) for x in solutions)]
 for i in solutions:
     if z(i) == minimum_value:
         print(i)
+print("\nNumber of Iterations : ", iterations)
+print("\nTime Taken :", tme)
 # print(x.dtype)
 # print(x.astype(int))
 # print(C)
