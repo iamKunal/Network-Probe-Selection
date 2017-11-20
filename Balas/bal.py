@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 from builtins import print
-
+import math
 import numpy as np
 import time
 import generate_test
@@ -69,8 +69,6 @@ def main_checker(x):
 
 
 def isMin(x):
-    if minimum_value == -1:
-        return z(x)
     if z(x) <= minimum_value:
         return z(x)
     return minimum_value
@@ -82,7 +80,7 @@ parent = []
 wasInStack = [[0] * p]
 iterations = 0
 depth = -1
-minimum_value = -1
+minimum_value = math.inf
 
 tme = time.time()
 while stack:
@@ -95,7 +93,8 @@ while stack:
     try:
         left_sol[depth + 1] = 1
         # print("l : ", left_sol)
-        if main_checker(left_sol):
+
+        if main_checker(left_sol) and z(left_sol)<minimum_value:
             stack.append([left_sol, depth])
         elif feasible(left_sol):
             # print(left_sol)
@@ -110,7 +109,7 @@ while stack:
     right_sol[depth] = 1
 
     # print("r : ", right_sol)
-    if main_checker(right_sol):
+    if main_checker(right_sol) and z(right_sol)<minimum_value:
         stack.append([right_sol, depth])
     elif feasible(right_sol):
         # print(right_sol)
